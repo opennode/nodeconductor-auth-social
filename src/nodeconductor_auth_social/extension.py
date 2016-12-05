@@ -7,7 +7,6 @@ class AuthSocialExtension(NodeConductorExtension):
     NODECONDUCTOR_AUTH_SOCIAL = {
         'GOOGLE_SECRET': 'CHANGE_ME_TO_GOOGLE_SECRET',
         'FACEBOOK_SECRET': 'CHANGE_ME_TO_FACEBOOK_SECRET',
-        'PROJECTED_COSTS_EXCESS': 20,
         'USER_ACTIVATION_URL_TEMPLATE': 'http://example.com/#/activate/{user_uuid}/{token}/',
     }
 
