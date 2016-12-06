@@ -35,5 +35,5 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
-* Mon December 5 2016 Dmitri Tsumak <dmitri@opennodecloud.com> - 0.1.0-1.el7
+* Mon Dec 5 2016 Dmitri Tsumak <dmitri@opennodecloud.com> - 0.1.0-1.el7
 - Initial version of the package
