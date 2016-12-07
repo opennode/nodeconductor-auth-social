@@ -18,7 +18,7 @@ install_requires = [
 
 setup(
     name='nodeconductor-auth-social',
-    version='0.1.1',
+    version='0.1.2',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
@@ -43,7 +43,7 @@ setup(
         'Framework :: Django',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: MIT',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
     ],
 )
