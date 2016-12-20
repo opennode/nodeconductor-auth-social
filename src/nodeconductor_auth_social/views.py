@@ -14,9 +14,9 @@ from rest_framework import views, status, response, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 
-from nodeconductor.core.tasks import send_task
 from nodeconductor.core.views import RefreshTokenMixin
 
+from . import tasks
 from .models import AuthProfile
 from .serializers import RegistrationSerializer, ActivationSerializer, AuthSerializer
 
@@ -196,7 +196,7 @@ class RegistrationView(generics.CreateAPIView):
         user = serializer.save()
         user.is_active = False
         user.save()
-        send_task('nodeconductor_auth', 'send_activation_email')(user.uuid.hex)
+        tasks.send_activation_email.delay(user.uuid.hex)
 
 
 class ActivationView(views.APIView):
