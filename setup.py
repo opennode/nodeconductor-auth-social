@@ -12,7 +12,7 @@ tests_requires = [
 
 
 install_requires = [
-    'nodeconductor>=0.110.0',
+    'nodeconductor>0.118.0',
 ]
 
 
