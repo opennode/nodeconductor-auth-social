@@ -16,7 +16,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'full_name', 'email', 'password')
-        write_only_fields = ('password',)
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
