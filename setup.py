@@ -12,13 +12,13 @@ tests_requires = [
 
 
 install_requires = [
-    'nodeconductor>=0.110.0',
+    'nodeconductor>0.118.0',
 ]
 
 
 setup(
     name='nodeconductor-auth-social',
-    version='0.2.1',
+    version='0.3.0',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://nodeconductor.com',
