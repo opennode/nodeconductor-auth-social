@@ -17,7 +17,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'full_name', 'email', 'password')
         extra_kwargs = {
-            'password': {'write_only': True}
+            'password': {'write_only': True},
         }
 
     def validate_email(self, value):
