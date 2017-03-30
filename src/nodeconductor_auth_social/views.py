@@ -1,8 +1,5 @@
 import json
-import os
-import random
 import requests
-import string
 import uuid
 
 from urlparse import parse_qsl
@@ -14,6 +11,7 @@ from rest_framework import views, status, response, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError
 
+from nodeconductor.core import utils as core_utils
 from nodeconductor.core.views import RefreshTokenMixin
 
 from . import tasks
@@ -49,13 +47,6 @@ class GoogleException(AuthException):
 
     def __str__(self):
         return self.message
-
-
-def generate_password(length=10):
-    chars = string.ascii_letters + string.digits + '!@#$%^&*()'
-    random.seed = (os.urandom(1024))
-
-    return ''.join(random.choice(chars) for i in range(length))
 
 
 def generate_username(name):
@@ -97,7 +88,7 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
             with transaction.atomic():
                 user = get_user_model().objects.create_user(
                     username=generate_username(user_name),
-                    password=generate_password(),
+                    password=core_utils.pwgen(pw_len=10),
                     full_name=user_name,
                     registration_method=self.provider
                 )
@@ -181,7 +172,7 @@ class FacebookView(BaseAuthView):
             try:
                 data = r.json()
                 error_message = data['error']
-            except:
+            except Exception:
                 values = (r.reason, r.status_code)
                 error_message = 'Message: %s, status code: %s' % values
             raise FacebookException(error_message)
