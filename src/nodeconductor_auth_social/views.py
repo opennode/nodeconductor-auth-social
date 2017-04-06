@@ -239,14 +239,16 @@ class SmartIDeeView(BaseAuthView):
             civil_number=backend_user['idcode'],
             defaults={
                 'username': generate_username(full_name),
-                'password': core_utils.pwgen(pw_len=10),
                 'email': backend_user['email'],
                 'full_name': full_name,
                 'registration_method': self.provider,
             }
         )
-        if not created:
+        if not created and user.full_name != full_name:
             user.full_name = full_name
+            user.save()
+        if created:
+            user.set_unusable_password()
             user.save()
         return user, created
 
