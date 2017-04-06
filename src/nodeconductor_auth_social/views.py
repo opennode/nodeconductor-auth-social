@@ -22,7 +22,7 @@ from .serializers import RegistrationSerializer, ActivationSerializer, AuthSeria
 auth_social_settings = getattr(settings, 'NODECONDUCTOR_AUTH_SOCIAL', {})
 GOOGLE_SECRET = auth_social_settings.get('GOOGLE_SECRET')
 FACEBOOK_SECRET = auth_social_settings.get('FACEBOOK_SECRET')
-SMARTID_SECRET = auth_social_settings.get('SMARTID_SECRET')
+SMARTIDEE_SECRET = auth_social_settings.get('SMARTIDEE_SECRET')
 
 
 class AuthException(APIException):
@@ -202,7 +202,7 @@ class SmartIDeeView(BaseAuthView):
 
         data = {
             'client_id': validated_data['client_id'],
-            'client_secret': 'ZZscy9TSxrKpmYIPNS7CvvaKRB5rRhac',
+            'client_secret': SMARTIDEE_SECRET,
             'redirect_uri': validated_data['redirect_uri'],
             'code': validated_data['code'],
             'grant_type': 'authorization_code',
@@ -234,7 +234,7 @@ class SmartIDeeView(BaseAuthView):
 
     def create_or_update_user(self, backend_user):
         """ Authenticate user by civil number """
-        full_name = '%s %s' % (backend_user['firstname'], backend_user['lastname'])
+        full_name = ('%s %s' % (backend_user['firstname'], backend_user['lastname']))[:100]
         user, created = get_user_model().objects.get_or_create(
             civil_number=backend_user['idcode'],
             defaults={
