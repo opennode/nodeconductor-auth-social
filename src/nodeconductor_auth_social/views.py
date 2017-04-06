@@ -52,12 +52,12 @@ class GoogleException(AuthException):
         return self.message
 
 
-class SmartIDException(AuthException):
+class SmartIDeeException(AuthException):
     def __init__(self, error_message, error_description):
-        self.message = 'SmartID error: %s' % error_message
+        self.message = 'SmartIDee error: %s' % error_message
         if error_description:
             self.message = '%s (%s)' % (self.message, error_description)
-        super(SmartIDException, self).__init__(detail=self.message)
+        super(SmartIDeeException, self).__init__(detail=self.message)
 
     def __str__(self):
         return self.message
@@ -193,8 +193,8 @@ class FacebookView(BaseAuthView):
             raise FacebookException(error_message)
 
 
-class SmartIDView(BaseAuthView):
-    provider = 'smartid'
+class SmartIDeeView(BaseAuthView):
+    provider = 'smartid.ee'
 
     def get_backend_user(self, validated_data):
         access_token_url = 'https://id.smartid.ee/oauth/access_token'
@@ -230,7 +230,7 @@ class SmartIDView(BaseAuthView):
                 values = (r.reason, r.status_code)
                 error_message = 'Message: %s, status code: %s' % values
                 error_description = ''
-            raise SmartIDException(error_message, error_description)
+            raise SmartIDeeException(error_message, error_description)
 
     def create_or_update_user(self, backend_user):
         """ Authenticate user by civil number """
