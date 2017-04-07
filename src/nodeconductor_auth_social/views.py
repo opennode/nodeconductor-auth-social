@@ -11,7 +11,6 @@ from rest_framework import views, status, response, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError, APIException
 
-from nodeconductor.core import utils as core_utils
 from nodeconductor.core.views import RefreshTokenMixin
 
 from . import tasks
@@ -23,6 +22,8 @@ auth_social_settings = getattr(settings, 'NODECONDUCTOR_AUTH_SOCIAL', {})
 GOOGLE_SECRET = auth_social_settings.get('GOOGLE_SECRET')
 FACEBOOK_SECRET = auth_social_settings.get('FACEBOOK_SECRET')
 SMARTIDEE_SECRET = auth_social_settings.get('SMARTIDEE_SECRET')
+
+User = get_user_model()
 
 
 class AuthException(APIException):
@@ -101,12 +102,13 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
         user_id, user_name = backend_user['id'], backend_user['name']
         try:
             with transaction.atomic():
-                user = get_user_model().objects.create_user(
+                user = User.objects.create_user(
                     username=generate_username(user_name),
-                    password=core_utils.pwgen(pw_len=10),
                     full_name=user_name,
                     registration_method=self.provider
                 )
+                user.set_unusable_password()
+                user.save()
                 setattr(user.auth_profile, self.provider, user_id)
                 user.auth_profile.save()
                 return user, True
@@ -235,21 +237,23 @@ class SmartIDeeView(BaseAuthView):
     def create_or_update_user(self, backend_user):
         """ Authenticate user by civil number """
         full_name = ('%s %s' % (backend_user['firstname'], backend_user['lastname']))[:100]
-        user, created = get_user_model().objects.get_or_create(
-            civil_number=backend_user['idcode'],
-            defaults={
-                'username': generate_username(full_name),
-                'email': backend_user['email'],
-                'full_name': full_name,
-                'registration_method': self.provider,
-            }
-        )
-        if not created and user.full_name != full_name:
-            user.full_name = full_name
-            user.save()
-        if created:
+        try:
+            user = User.objects.get(civil_number=backend_user['idcode'])
+        except User.DoesNotExist:
+            created = True
+            user = User.objects.create_user(
+                username=generate_username(full_name),
+                email=backend_user['email'],
+                full_name=full_name,
+                registration_method=self.provider,
+            )
             user.set_unusable_password()
             user.save()
+        else:
+            created = False
+            if user.full_name != full_name:
+                user.full_name = full_name
+                user.save()
         return user, created
 
 
