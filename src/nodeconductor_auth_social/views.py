@@ -9,9 +9,8 @@ from django.contrib.auth import get_user_model
 from django.db import transaction, IntegrityError
 from rest_framework import views, status, response, generics
 from rest_framework.authtoken.models import Token
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, APIException
 
-from nodeconductor.core import utils as core_utils
 from nodeconductor.core.views import RefreshTokenMixin
 
 from . import tasks
@@ -22,10 +21,13 @@ from .serializers import RegistrationSerializer, ActivationSerializer, AuthSeria
 auth_social_settings = getattr(settings, 'NODECONDUCTOR_AUTH_SOCIAL', {})
 GOOGLE_SECRET = auth_social_settings.get('GOOGLE_SECRET')
 FACEBOOK_SECRET = auth_social_settings.get('FACEBOOK_SECRET')
+SMARTIDEE_SECRET = auth_social_settings.get('SMARTIDEE_SECRET')
+
+User = get_user_model()
 
 
-class AuthException(Exception):
-    pass
+class AuthException(APIException):
+    status = status.HTTP_401_UNAUTHORIZED
 
 
 class FacebookException(AuthException):
@@ -34,6 +36,7 @@ class FacebookException(AuthException):
         self.message_type = facebook_error.get('type', 'Undefined')
         self.message_code = facebook_error.get('code', 'Undefined')
         self.message = 'Facebook error {} (code:{}): {}'.format(self.message_type, self.message_code, self.message_text)
+        super(FacebookException, self).__init__(detail=self.message)
 
     def __str__(self):
         return self.message
@@ -44,6 +47,18 @@ class GoogleException(AuthException):
         self.message_text = google_error.get('message', 'Undefined')
         self.message_code = google_error.get('code', 'Undefined')
         self.message = 'Google error (code:{}): {}'.format(self.message_code, self.message_text)
+        super(GoogleException, self).__init__(detail=self.message)
+
+    def __str__(self):
+        return self.message
+
+
+class SmartIDeeException(AuthException):
+    def __init__(self, error_message, error_description):
+        self.message = 'SmartIDee error: %s' % error_message
+        if error_description:
+            self.message = '%s (%s)' % (self.message, error_description)
+        super(SmartIDeeException, self).__init__(detail=self.message)
 
     def __str__(self):
         return self.message
@@ -70,7 +85,7 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
         serializer.is_valid(raise_exception=True)
 
         backend_user = self.get_backend_user(serializer.validated_data)
-        user, created = self.create_or_update_user(backend_user['id'], backend_user['name'])
+        user, created = self.create_or_update_user(backend_user)
 
         token = self.refresh_token(user)
 
@@ -83,15 +98,17 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
         """
         raise NotImplementedError
 
-    def create_or_update_user(self, user_id, user_name):
+    def create_or_update_user(self, backend_user):
+        user_id, user_name = backend_user['id'], backend_user['name']
         try:
             with transaction.atomic():
-                user = get_user_model().objects.create_user(
+                user = User.objects.create_user(
                     username=generate_username(user_name),
-                    password=core_utils.pwgen(pw_len=10),
                     full_name=user_name,
                     registration_method=self.provider
                 )
+                user.set_unusable_password()
+                user.save()
                 setattr(user.auth_profile, self.provider, user_id)
                 user.auth_profile.save()
                 return user, True
@@ -176,6 +193,68 @@ class FacebookView(BaseAuthView):
                 values = (r.reason, r.status_code)
                 error_message = 'Message: %s, status code: %s' % values
             raise FacebookException(error_message)
+
+
+class SmartIDeeView(BaseAuthView):
+    provider = 'smartid.ee'
+
+    def get_backend_user(self, validated_data):
+        access_token_url = 'https://id.smartid.ee/oauth/access_token'
+        user_data_url = 'https://id.smartid.ee/api/v2/user_data'
+
+        data = {
+            'client_id': validated_data['client_id'],
+            'client_secret': SMARTIDEE_SECRET,
+            'redirect_uri': validated_data['redirect_uri'],
+            'code': validated_data['code'],
+            'grant_type': 'authorization_code',
+        }
+
+        # Step 1. Exchange authorization code for access token.
+        # Issue to deal with request verification: WAL-694
+        r = requests.post(access_token_url, data=data, verify=False)  # nosec
+        self.check_response(r)
+        access_token = r.json()['access_token']
+
+        # Step 2. Retrieve information about the current user.
+        # Issue to deal with request verification: WAL-694
+        r = requests.get(user_data_url, params={'access_token': access_token}, verify=False)  # nosec
+        self.check_response(r)
+        return r.json()
+
+    def check_response(self, r, valid_response=requests.codes.ok):
+        if r.status_code != valid_response:
+            try:
+                data = r.json()
+                error_message = data['error']
+                error_description = data.get('error_description', '')
+            except Exception:
+                values = (r.reason, r.status_code)
+                error_message = 'Message: %s, status code: %s' % values
+                error_description = ''
+            raise SmartIDeeException(error_message, error_description)
+
+    def create_or_update_user(self, backend_user):
+        """ Authenticate user by civil number """
+        full_name = ('%s %s' % (backend_user['firstname'], backend_user['lastname']))[:100]
+        try:
+            user = User.objects.get(civil_number=backend_user['idcode'])
+        except User.DoesNotExist:
+            created = True
+            user = User.objects.create_user(
+                username=generate_username(full_name),
+                email=backend_user['email'],
+                full_name=full_name,
+                registration_method=self.provider,
+            )
+            user.set_unusable_password()
+            user.save()
+        else:
+            created = False
+            if user.full_name != full_name:
+                user.full_name = full_name
+                user.save()
+        return user, created
 
 
 class RegistrationView(generics.CreateAPIView):
