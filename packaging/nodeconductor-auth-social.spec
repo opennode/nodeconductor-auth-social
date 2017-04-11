@@ -1,7 +1,7 @@
 Name: nodeconductor-auth-social
 Summary: NodeConductor plugin for social authentication.
 Group: Development/Libraries
-Version: 0.4.0
+Version: 0.5.0
 Release: 1.el7
 License: MIT
 Url: http://nodeconductor.com
@@ -35,6 +35,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Tue Apr 11 2017 Jenkins <jenkins@opennodecloud.com> - 0.5.0-1.el7
+- New upstream release
+
 * Thu Mar 2 2017 Jenkins <jenkins@opennodecloud.com> - 0.4.0-1.el7
 - New upstream release
 
