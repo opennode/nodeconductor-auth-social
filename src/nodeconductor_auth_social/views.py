@@ -211,14 +211,12 @@ class SmartIDeeView(BaseAuthView):
         }
 
         # Step 1. Exchange authorization code for access token.
-        # Issue to deal with request verification: WAL-694
-        r = requests.post(access_token_url, data=data, verify=False)  # nosec
+        r = requests.post(access_token_url, data=data)
         self.check_response(r)
         access_token = r.json()['access_token']
 
         # Step 2. Retrieve information about the current user.
-        # Issue to deal with request verification: WAL-694
-        r = requests.get(user_data_url, params={'access_token': access_token}, verify=False)  # nosec
+        r = requests.get(user_data_url, params={'access_token': access_token})
         self.check_response(r)
         return r.json()
 

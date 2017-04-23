@@ -6,6 +6,7 @@ from nodeconductor.core import NodeConductorExtension
 class AuthSocialExtension(NodeConductorExtension):
 
     class Settings:
+        # wiki: https://opennode.atlassian.net/wiki/display/WD/AuthSocial+plugin+configuration
         NODECONDUCTOR_AUTH_SOCIAL = {
             'GOOGLE_SECRET': 'CHANGE_ME_TO_GOOGLE_SECRET',
             'FACEBOOK_SECRET': 'CHANGE_ME_TO_FACEBOOK_SECRET',
