@@ -74,6 +74,7 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
     provider = None  # either 'google' or 'facebook'
 
     def post(self, request, format=None):
+        # XXX: Django 1.10 deprecation, change to user.is_anonymous
         if not self.request.user.is_anonymous():
             raise ValidationError('This view is for anonymous users only.')
 
