@@ -244,6 +244,7 @@ class SmartIDeeView(BaseAuthView):
                 username=generate_username(full_name),
                 email=backend_user['email'],
                 full_name=full_name,
+                civil_number=backend_user['idcode'],
                 registration_method=self.provider,
             )
             user.set_unusable_password()
