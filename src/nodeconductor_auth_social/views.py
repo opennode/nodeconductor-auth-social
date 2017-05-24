@@ -242,8 +242,10 @@ class SmartIDeeView(BaseAuthView):
             created = True
             user = User.objects.create_user(
                 username=generate_username(full_name),
-                email=backend_user['email'],
+                # Ilja: disabling email update from smartid.ee as it comes in as a fake object for the moment.
+                # email=backend_user['email'],
                 full_name=full_name,
+                civil_number=backend_user['idcode'],
                 registration_method=self.provider,
             )
             user.set_unusable_password()
