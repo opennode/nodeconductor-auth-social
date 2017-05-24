@@ -74,6 +74,7 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
     provider = None  # either 'google' or 'facebook'
 
     def post(self, request, format=None):
+        # XXX: Django 1.10 deprecation, change to user.is_anonymous
         if not self.request.user.is_anonymous():
             raise ValidationError('This view is for anonymous users only.')
 
@@ -241,8 +242,10 @@ class SmartIDeeView(BaseAuthView):
             created = True
             user = User.objects.create_user(
                 username=generate_username(full_name),
-                email=backend_user['email'],
+                # Ilja: disabling email update from smartid.ee as it comes in as a fake object for the moment.
+                # email=backend_user['email'],
                 full_name=full_name,
+                civil_number=backend_user['idcode'],
                 registration_method=self.provider,
             )
             user.set_unusable_password()
