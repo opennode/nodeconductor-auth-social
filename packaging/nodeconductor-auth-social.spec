@@ -1,5 +1,5 @@
 Name: nodeconductor-auth-social
-Summary: NodeConductor plugin for social authentication.
+Summary: Waldur plugin for social authentication.
 Group: Development/Libraries
 Version: 0.6.1
 Release: 1.el7
@@ -7,7 +7,7 @@ License: MIT
 Url: http://nodeconductor.com
 Source0: %{name}-%{version}.tar.gz
 
-Requires: nodeconductor > 0.118.0
+Requires: nodeconductor > 0.138.0
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -15,7 +15,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 BuildRequires: python-setuptools
 
 %description
-NodeConductor plugin for social authentication.
+Waldur plugin for social authentication.
 
 %prep
 %setup -q -n %{name}-%{version}
