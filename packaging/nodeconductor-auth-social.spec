@@ -1,7 +1,7 @@
 Name: nodeconductor-auth-social
 Summary: Waldur plugin for social authentication.
 Group: Development/Libraries
-Version: 0.6.1
+Version: 0.7.0
 Release: 1.el7
 License: MIT
 Url: http://nodeconductor.com
@@ -35,6 +35,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Fri Jun 9 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.0-1.el7
+- New upstream release
+
 * Wed May 24 2017 Jenkins <jenkins@opennodecloud.com> - 0.6.1-1.el7
 - New upstream release
 
