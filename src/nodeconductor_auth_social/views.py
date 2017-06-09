@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import json
 import requests
 import uuid
@@ -14,6 +16,7 @@ from rest_framework.exceptions import ValidationError, APIException
 from nodeconductor.core.views import RefreshTokenMixin
 
 from . import tasks
+from .log import event_logger, provider_event_type_mapping
 from .models import AuthProfile
 from .serializers import RegistrationSerializer, ActivationSerializer, AuthSerializer
 
@@ -71,11 +74,10 @@ def generate_username(name):
 class BaseAuthView(RefreshTokenMixin, views.APIView):
     permission_classes = []
     authentication_classes = []
-    provider = None  # either 'google' or 'facebook'
+    provider = None
 
     def post(self, request, format=None):
-        # XXX: Django 1.10 deprecation, change to user.is_anonymous
-        if not self.request.user.is_anonymous():
+        if not self.request.user.is_anonymous:
             raise ValidationError('This view is for anonymous users only.')
 
         serializer = AuthSerializer(data={
@@ -90,6 +92,14 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
 
         token = self.refresh_token(user)
 
+        event_logger.auth_social.info(
+            'User {user_username} with full name {user_full_name} authenticated successfully with {provider}.',
+            event_type=provider_event_type_mapping[self.provider],
+            event_context={
+                'provider': self.provider,
+                'user': user,
+            }
+        )
         return response.Response({'token': token.key},
                                  status=created and status.HTTP_201_CREATED or status.HTTP_200_OK)
 

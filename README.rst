@@ -1,5 +1,4 @@
-NodeConductor Auth Social
-=========================
+Waldur Auth Social
+==================
 
-NodeConductor plugin for authentication with social networks, such as Facebook, Google Plus.
-
+Waldur plugin for authentication with social networks, such as Facebook, Google Plus.

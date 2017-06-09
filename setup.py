@@ -7,23 +7,24 @@ dev_requires = [
 ]
 
 tests_requires = [
-    'mock==1.0.1',
+    'mock>=1.0.1',
 ]
 
 
 install_requires = [
-    'nodeconductor>0.118.0',
+    'nodeconductor>0.138.0',
 ]
 
 
 setup(
     name='nodeconductor-auth-social',
-    version='0.6.1',
+    version='0.7.0',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
-    url='http://nodeconductor.com',
-    description='NodeConductor plugin for authentication with social networks such as Facebook, Google Plus.',
+    url='http://waldur.com',
+    description='Waldur plugin for authentication with social networks such as Facebook, Google Plus.',
     long_description=open('README.rst').read(),
+    license='MIT',
     package_dir={'': 'src'},
     packages=find_packages('src', exclude=['*.tests', '*.tests.*', 'tests.*', 'tests']),
     install_requires=install_requires,
