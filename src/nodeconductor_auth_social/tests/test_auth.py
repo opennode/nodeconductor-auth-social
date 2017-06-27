@@ -1,3 +1,4 @@
+import json
 import mock
 
 from django.conf import settings
@@ -57,6 +58,19 @@ class AuthTest(test.APITransactionTestCase):
             response = self.google_login()
             token2 = response.data['token']
             self.assertNotEqual(token1, token2)
+
+    @mock.patch('requests.post')
+    def test_raises_exception_if_user_is_not_authorized_by_google(self, post_request_mock):
+        invalid_response = {
+            'error': 'invalid_client',
+            'error_description': 'Unauthorized'
+        }
+        mockresponse = mock.Mock()
+        post_request_mock.return_value = mockresponse
+        mockresponse.text = json.dumps(invalid_response)
+
+        response = self.client.post(reverse('auth_google'), self.valid_data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def google_login(self):
         with mock.patch('nodeconductor_auth_social.'

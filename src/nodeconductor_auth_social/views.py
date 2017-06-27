@@ -30,7 +30,7 @@ User = get_user_model()
 
 
 class AuthException(APIException):
-    status = status.HTTP_401_UNAUTHORIZED
+    status_code = status.HTTP_401_UNAUTHORIZED
 
 
 class FacebookException(AuthException):
@@ -47,9 +47,13 @@ class FacebookException(AuthException):
 
 class GoogleException(AuthException):
     def __init__(self, google_error):
-        self.message_text = google_error.get('message', 'Undefined')
-        self.message_code = google_error.get('code', 'Undefined')
-        self.message = 'Google error (code:{}): {}'.format(self.message_code, self.message_text)
+        if isinstance(google_error, basestring):
+            self.message = google_error
+        else:
+            self.message_text = google_error.get('message', 'Undefined')
+            self.message_code = google_error.get('code', 'Undefined')
+            self.message = 'Google error (code:{}): {}'.format(self.message_code, self.message_text)
+
         super(GoogleException, self).__init__(detail=self.message)
 
     def __str__(self):
@@ -149,6 +153,7 @@ class GoogleView(BaseAuthView):
         r = requests.post(access_token_url, data=payload)
 
         token = json.loads(r.text)
+        self._assert_response_valid(token)
         headers = {'Authorization': 'Bearer {0}'.format(token['access_token'])}
 
         # Step 2. Retrieve information about the current user.
@@ -156,13 +161,16 @@ class GoogleView(BaseAuthView):
         response_data = json.loads(r.text)
 
         # Step 3. Check is response valid.
-        if 'error' in response_data:
-            raise GoogleException(response_data['error'])
+        self._assert_response_valid(response_data)
 
         return {
             'id': response_data['sub'],
             'name': response_data['name']
         }
+
+    def _assert_response_valid(self, response_data):
+        if 'error' in response_data:
+            raise GoogleException(response_data['error'])
 
 
 class FacebookView(BaseAuthView):
