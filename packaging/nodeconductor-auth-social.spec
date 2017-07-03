@@ -1,4 +1,4 @@
-Name: nodeconductor-auth-social
+Name: waldur-auth-social
 Summary: Waldur plugin for social authentication.
 Group: Development/Libraries
 Version: 0.7.1
@@ -13,6 +13,8 @@ BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires: python-setuptools
+
+Obsoletes: nodeconductor-auth-social
 
 %description
 Waldur plugin for social authentication.
