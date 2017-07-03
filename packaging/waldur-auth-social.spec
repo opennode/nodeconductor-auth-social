@@ -1,10 +1,10 @@
-Name: nodeconductor-auth-social
+Name: waldur-auth-social
 Summary: Waldur plugin for social authentication.
 Group: Development/Libraries
-Version: 0.7.1
+Version: 0.7.2
 Release: 1.el7
 License: MIT
-Url: http://nodeconductor.com
+Url: http://waldur.com
 Source0: %{name}-%{version}.tar.gz
 
 Requires: waldur-core > 0.138.0
@@ -13,6 +13,8 @@ BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 
 BuildRequires: python-setuptools
+
+Obsoletes: nodeconductor-auth-social
 
 %description
 Waldur plugin for social authentication.
@@ -35,6 +37,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Mon Jul 3 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.2-1.el7
+- New upstream release
+
 * Fri Jun 30 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.1-1.el7
 - New upstream release
 
