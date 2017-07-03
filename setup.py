@@ -18,7 +18,7 @@ install_requires = [
 
 setup(
     name='nodeconductor-auth-social',
-    version='0.7.1',
+    version='0.7.2',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',
