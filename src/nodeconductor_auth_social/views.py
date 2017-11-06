@@ -191,7 +191,7 @@ class FacebookView(BaseAuthView):
         # Step 1. Exchange authorization code for access token.
         r = requests.get(access_token_url, params=params)
         self.check_response(r)
-        access_token = dict(parse_qsl(r.text))
+        access_token = r.json()
 
         # Step 2. Retrieve information about the current user.
         r = requests.get(graph_api_url, params=access_token)
