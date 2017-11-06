@@ -4,8 +4,6 @@ import json
 import requests
 import uuid
 
-from urlparse import parse_qsl
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction, IntegrityError
