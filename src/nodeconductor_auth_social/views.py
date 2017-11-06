@@ -4,8 +4,6 @@ import json
 import requests
 import uuid
 
-from urlparse import parse_qsl
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction, IntegrityError
@@ -191,10 +189,12 @@ class FacebookView(BaseAuthView):
         # Step 1. Exchange authorization code for access token.
         r = requests.get(access_token_url, params=params)
         self.check_response(r)
-        access_token = dict(parse_qsl(r.text))
+        params = {
+            'access_token': r.json()['access_token']
+        }
 
         # Step 2. Retrieve information about the current user.
-        r = requests.get(graph_api_url, params=access_token)
+        r = requests.get(graph_api_url, params=params)
         self.check_response(r)
         response_data = r.json()
 
