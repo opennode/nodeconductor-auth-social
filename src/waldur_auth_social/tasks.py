@@ -6,15 +6,15 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
 
-@shared_task(name='nodeconductor_auth_social.send_activation_email')
+@shared_task(name='waldur_auth_social.send_activation_email')
 def send_activation_email(user_uuid):
-    subject = 'Account activation on NodeConductor'
-    template_name = 'nodeconductor_auth_social/activation_email_body.txt'
+    subject = 'Account activation on Waldur'
+    template_name = 'waldur_auth_social/activation_email_body.txt'
 
     user = get_user_model().objects.get(uuid=user_uuid, is_active=False)
 
     token = default_token_generator.make_token(user)
-    url_template = settings.NODECONDUCTOR_AUTH_SOCIAL['USER_ACTIVATION_URL_TEMPLATE']
+    url_template = settings.WALDUR_AUTH_SOCIAL['USER_ACTIVATION_URL_TEMPLATE']
     url = url_template.format(token=token, user_uuid=user_uuid)
     context = {'activation_url': url}
 

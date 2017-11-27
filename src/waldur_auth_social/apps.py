@@ -6,8 +6,8 @@ from django.conf import settings
 
 
 class AuthSocialConfig(AppConfig):
-    name = 'nodeconductor_auth_social'
-    # Label is derived from NodeConductor Plus to avoid data migration
+    name = 'waldur_auth_social'
+    # Label is derived from Waldur Plus to avoid data migration
     label = 'nodeconductor_auth'
     verbose_name = 'Auth Social'
 
@@ -17,5 +17,5 @@ class AuthSocialConfig(AppConfig):
         signals.post_save.connect(
             handlers.create_auth_profile,
             sender=settings.AUTH_USER_MODEL,
-            dispatch_uid='nodeconductor_auth_social.handlers.create_auth_profile',
+            dispatch_uid='waldur_auth_social.handlers.create_auth_profile',
         )

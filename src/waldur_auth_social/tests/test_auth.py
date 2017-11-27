@@ -73,8 +73,7 @@ class AuthTest(test.APITransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def google_login(self):
-        with mock.patch('nodeconductor_auth_social.'
-                        'views.GoogleView.get_backend_user') as get_backend_user:
+        with mock.patch('waldur_auth_social.views.GoogleView.get_backend_user') as get_backend_user:
             get_backend_user.return_value = {
                 'id': '123',
                 'name': 'Google user'
@@ -82,8 +81,7 @@ class AuthTest(test.APITransactionTestCase):
             return self.client.post(reverse('auth_google'), self.valid_data)
 
     def facebook_login(self):
-        with mock.patch('nodeconductor_auth_social.'
-                        'views.FacebookView.get_backend_user') as get_backend_user:
+        with mock.patch('waldur_auth_social.views.FacebookView.get_backend_user') as get_backend_user:
             get_backend_user.return_value = {
                 'id': '123',
                 'name': 'Facebook user'

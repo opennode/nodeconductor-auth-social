@@ -17,7 +17,7 @@ install_requires = [
 
 
 setup(
-    name='nodeconductor-auth-social',
+    name='waldur-auth-social',
     version='0.7.4',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
@@ -35,7 +35,7 @@ setup(
     },
     entry_points={
         'nodeconductor_extensions': (
-            'nodeconductor_auth_social = nodeconductor_auth_social.extension:AuthSocialExtension',
+            'waldur_auth_social = waldur_auth_social.extension:AuthSocialExtension',
         ),
     },
     tests_require=tests_requires,
