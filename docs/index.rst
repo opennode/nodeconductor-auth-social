@@ -1,7 +1,7 @@
-Welcome to NodeConductor Auth Social plugin's documentation!
-============================================================
+Welcome to Waldur Auth Social plugin's documentation!
+=====================================================
 
-NodeConductor plugin for authentication with social networks such as Facebook, Google Plus.
+Waldur plugin for authentication with social networks such as Facebook, Google Plus.
 
 Guide
 -----
@@ -22,7 +22,7 @@ Endpoints
 License
 -------
 
-NodeConductor Auth Social plugin is open-source under MIT license.
+Waldur Auth Social plugin is open-source under MIT license.
 
 
 Indices and tables

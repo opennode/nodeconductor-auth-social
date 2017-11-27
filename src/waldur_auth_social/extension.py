@@ -7,7 +7,7 @@ class AuthSocialExtension(NodeConductorExtension):
 
     class Settings:
         # wiki: https://opennode.atlassian.net/wiki/display/WD/AuthSocial+plugin+configuration
-        NODECONDUCTOR_AUTH_SOCIAL = {
+        WALDUR_AUTH_SOCIAL = {
             'GOOGLE_SECRET': 'CHANGE_ME_TO_GOOGLE_SECRET',
             'FACEBOOK_SECRET': 'CHANGE_ME_TO_FACEBOOK_SECRET',
             'SMARTIDEE_SECRET': 'CHANGE_ME_TO_SMARTIDEE_SECRET',
@@ -16,7 +16,7 @@ class AuthSocialExtension(NodeConductorExtension):
 
     @staticmethod
     def django_app():
-        return 'nodeconductor_auth_social'
+        return 'waldur_auth_social'
 
     @staticmethod
     def django_urls():
