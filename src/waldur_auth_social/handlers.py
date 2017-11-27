@@ -1,4 +1,3 @@
-from nodeconductor.structure import models as structure_models
 from .models import AuthProfile
 
 

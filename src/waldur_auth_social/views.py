@@ -19,7 +19,7 @@ from .models import AuthProfile
 from .serializers import RegistrationSerializer, ActivationSerializer, AuthSerializer
 
 
-auth_social_settings = getattr(settings, 'NODECONDUCTOR_AUTH_SOCIAL', {})
+auth_social_settings = getattr(settings, 'WALDUR_AUTH_SOCIAL', {})
 GOOGLE_SECRET = auth_social_settings.get('GOOGLE_SECRET')
 FACEBOOK_SECRET = auth_social_settings.get('FACEBOOK_SECRET')
 SMARTIDEE_SECRET = auth_social_settings.get('SMARTIDEE_SECRET')
