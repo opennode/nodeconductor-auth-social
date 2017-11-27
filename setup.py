@@ -18,7 +18,7 @@ install_requires = [
 
 setup(
     name='waldur-auth-social',
-    version='0.7.4',
+    version='0.7.5',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',
