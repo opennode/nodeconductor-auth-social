@@ -6,7 +6,7 @@ from django.utils import timezone
 from rest_framework import status, test
 from rest_framework.reverse import reverse
 
-from nodeconductor.structure.tests import factories as structure_factories
+from waldur_core.structure.tests import factories as structure_factories
 
 from ..models import AuthProfile
 
@@ -52,7 +52,7 @@ class AuthTest(test.APITransactionTestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         token1 = response.data['token']
 
-        lifetime = settings.NODECONDUCTOR.get('TOKEN_LIFETIME', timezone.timedelta(hours=1))
+        lifetime = settings.WALDUR_CORE.get('TOKEN_LIFETIME', timezone.timedelta(hours=1))
         mocked_now = timezone.now() + lifetime
         with mock.patch('django.utils.timezone.now', lambda: mocked_now):
             response = self.google_login()
