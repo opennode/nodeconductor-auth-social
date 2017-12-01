@@ -12,7 +12,7 @@ tests_requires = [
 
 
 install_requires = [
-    'waldur_core>0.138.0',
+    'waldur-core>=0.151.0',
 ]
 
 
