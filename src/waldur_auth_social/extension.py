@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
-from nodeconductor.core import NodeConductorExtension
+from waldur_core.core import WaldurExtension
 
 
-class AuthSocialExtension(NodeConductorExtension):
+class AuthSocialExtension(WaldurExtension):
 
     class Settings:
         # wiki: https://opennode.atlassian.net/wiki/display/WD/AuthSocial+plugin+configuration

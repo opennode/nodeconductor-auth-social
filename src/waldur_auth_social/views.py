@@ -11,7 +11,7 @@ from rest_framework import views, status, response, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError, APIException
 
-from nodeconductor.core.views import RefreshTokenMixin
+from waldur_core.core.views import RefreshTokenMixin
 
 from . import tasks
 from .log import event_logger, provider_event_type_mapping

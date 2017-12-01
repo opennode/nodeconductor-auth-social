@@ -12,7 +12,7 @@ tests_requires = [
 
 
 install_requires = [
-    'nodeconductor>0.138.0',
+    'waldur-core>=0.151.0',
 ]
 
 
@@ -34,7 +34,7 @@ setup(
         'dev': dev_requires,
     },
     entry_points={
-        'nodeconductor_extensions': (
+        'waldur_extensions': (
             'waldur_auth_social = waldur_auth_social.extension:AuthSocialExtension',
         ),
     },
