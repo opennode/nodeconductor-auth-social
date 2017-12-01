@@ -12,13 +12,13 @@ tests_requires = [
 
 
 install_requires = [
-    'nodeconductor>0.138.0',
+    'waldur-core>=0.151.0',
 ]
 
 
 setup(
     name='waldur-auth-social',
-    version='0.7.5',
+    version='0.7.6',
     author='OpenNode Team',
     author_email='info@opennodecloud.com',
     url='http://waldur.com',
@@ -34,7 +34,7 @@ setup(
         'dev': dev_requires,
     },
     entry_points={
-        'nodeconductor_extensions': (
+        'waldur_extensions': (
             'waldur_auth_social = waldur_auth_social.extension:AuthSocialExtension',
         ),
     },

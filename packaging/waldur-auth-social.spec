@@ -1,13 +1,13 @@
 Name: waldur-auth-social
 Summary: Waldur plugin for social authentication.
 Group: Development/Libraries
-Version: 0.7.5
+Version: 0.7.6
 Release: 1.el7
 License: MIT
 Url: http://waldur.com
 Source0: %{name}-%{version}.tar.gz
 
-Requires: waldur-core > 0.138.0
+Requires: waldur-core >= 0.151.0
 
 BuildArch: noarch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
@@ -37,6 +37,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/*
 
 %changelog
+* Fri Dec 1 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.6-1.el7
+- New upstream release
+
 * Mon Nov 27 2017 Jenkins <jenkins@opennodecloud.com> - 0.7.5-1.el7
 - New upstream release
 
