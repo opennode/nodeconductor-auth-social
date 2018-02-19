@@ -11,7 +11,7 @@ from rest_framework import views, status, response, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.exceptions import ValidationError, APIException
 
-from waldur_core.core.views import RefreshTokenMixin
+from waldur_core.core.views import RefreshTokenMixin, validate_authentication_method
 
 from . import tasks
 from .log import event_logger, provider_event_type_mapping
@@ -23,6 +23,9 @@ auth_social_settings = getattr(settings, 'WALDUR_AUTH_SOCIAL', {})
 GOOGLE_SECRET = auth_social_settings.get('GOOGLE_SECRET')
 FACEBOOK_SECRET = auth_social_settings.get('FACEBOOK_SECRET')
 SMARTIDEE_SECRET = auth_social_settings.get('SMARTIDEE_SECRET')
+
+validate_social_signup = validate_authentication_method('SOCIAL_SIGNUP')
+validate_local_signup = validate_authentication_method('LOCAL_SIGNUP')
 
 User = get_user_model()
 
@@ -78,6 +81,7 @@ class BaseAuthView(RefreshTokenMixin, views.APIView):
     authentication_classes = []
     provider = None
 
+    @validate_social_signup
     def post(self, request, format=None):
         if not self.request.user.is_anonymous:
             raise ValidationError('This view is for anonymous users only.')
@@ -281,6 +285,10 @@ class RegistrationView(generics.CreateAPIView):
     authentication_classes = ()
     serializer_class = RegistrationSerializer
 
+    @validate_local_signup
+    def post(self, request, *args, **kwargs):
+        return super(RegistrationView, self).post(request, *args, **kwargs)
+
     def perform_create(self, serializer):
         user = serializer.save()
         user.is_active = False
@@ -292,6 +300,7 @@ class ActivationView(views.APIView):
     permission_classes = ()
     authentication_classes = ()
 
+    @validate_local_signup
     def post(self, request):
         serializer = ActivationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
