@@ -6,18 +6,39 @@ from django.utils import timezone
 from rest_framework import status, test
 from rest_framework.reverse import reverse
 
+from waldur_core.core.tests.helpers import override_waldur_core_settings
 from waldur_core.structure.tests import factories as structure_factories
 
 from ..models import AuthProfile
 
 
-class AuthTest(test.APITransactionTestCase):
+class BaseAuthTest(test.APITransactionTestCase):
     def setUp(self):
         self.valid_data = {
             'clientId': '4242324',
             'redirectUri': 'http://example.com/redirect/',
             'code': 'secret'
         }
+
+    def google_login(self):
+        with mock.patch('waldur_auth_social.views.GoogleView.get_backend_user') as get_backend_user:
+            get_backend_user.return_value = {
+                'id': '123',
+                'name': 'Google user'
+            }
+            return self.client.post(reverse('auth_google'), self.valid_data)
+
+    def facebook_login(self):
+        with mock.patch('waldur_auth_social.views.FacebookView.get_backend_user') as get_backend_user:
+            get_backend_user.return_value = {
+                'id': '123',
+                'name': 'Facebook user'
+            }
+            return self.client.post(reverse('auth_facebook'), self.valid_data)
+
+
+@override_waldur_core_settings(AUTHENTICATION_METHODS=['SOCIAL_SIGNUP'])
+class SocialSignupTest(BaseAuthTest):
 
     def test_auth_view_works_for_anonymous_only(self):
         user = structure_factories.UserFactory()
@@ -72,18 +93,32 @@ class AuthTest(test.APITransactionTestCase):
         response = self.client.post(reverse('auth_google'), self.valid_data)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
-    def google_login(self):
-        with mock.patch('waldur_auth_social.views.GoogleView.get_backend_user') as get_backend_user:
-            get_backend_user.return_value = {
-                'id': '123',
-                'name': 'Google user'
-            }
-            return self.client.post(reverse('auth_google'), self.valid_data)
 
-    def facebook_login(self):
-        with mock.patch('waldur_auth_social.views.FacebookView.get_backend_user') as get_backend_user:
-            get_backend_user.return_value = {
-                'id': '123',
-                'name': 'Facebook user'
-            }
-            return self.client.post(reverse('auth_facebook'), self.valid_data)
+class LocalSignupTest(test.APITransactionTestCase):
+    def post_request(self):
+        return self.client.post(reverse('auth_registration'), {
+            'username': 'alice2018',
+            'full_name': 'Alice Lebowski',
+            'email': 'alice@example.com',
+            'password': 'secret',
+        })
+
+    @override_waldur_core_settings(AUTHENTICATION_METHODS=['LOCAL_SIGNUP'])
+    def test_local_signup_creates_user(self):
+        response = self.post_request()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    @override_waldur_core_settings(AUTHENTICATION_METHODS=['LOCAL_SIGNIN'])
+    def test_local_signup_fails_if_it_is_not_enabled(self):
+        response = self.post_request()
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue('Authentication method is disabled.' in response.content)
+
+
+@override_waldur_core_settings(AUTHENTICATION_METHODS=['LOCAL_SIGNIN'])
+class DisabledAuthenticationTest(BaseAuthTest):
+
+    def test_google_auth_fails_if_social_authentication_is_not_enabled(self):
+        response = self.google_login()
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertTrue('Authentication method is disabled.' in response.content)
